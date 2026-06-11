@@ -1,0 +1,189 @@
+{% extends 'sharotta/base.html' %}
+{% load static %}
+
+{% block title %}Sharotta — Nonton Anime Subtitle Indonesia Gratis{% endblock %}
+
+{% block content %}
+
+<!-- MAIN + SIDEBAR -->
+<div class="main">
+
+  <!-- BANNER -->
+  <div class="banner">
+    <div class="banner-deco">🌸</div>
+    <div class="banner-text">
+      <h2>Nonton Anime<br><span>Subtitle Indonesia</span></h2>
+      <p>Ribuan judul anime, update setiap hari — gratis!</p>
+    </div>
+    <button class="btn-banner">🎬 Mulai Nonton Sekarang</button>
+  </div>
+
+  <!-- FILTER GENRE -->
+  <div class="genre-row">
+    <a href="{% url 'sharotta:home' %}" class="genre-chip {% if not selected_genre %}active{% endif %}">Semua</a>
+    {% for genre in genres %}
+      <a href="?genre={{ genre.slug }}" class="genre-chip {% if selected_genre == genre.slug %}active{% endif %}">
+        {{ genre.nama }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <!-- BARU DITAMBAHKAN -->
+  <div class="section-header">
+    <div class="section-title">Baru Ditambahkan</div>
+    <a href="#" class="see-all">Lihat Semua →</a>
+  </div>`
+  <div class="anime-grid">
+    {% for anime in anime_terbaru %}
+      <a href="#" class="anime-card">
+        <div class="anime-thumb" style="background: {{ anime.warna_bg|default:'linear-gradient(135deg,#1a0a2e,#4a1570)' }}">
+          {% if anime.thumbnail %}
+            <img src="{{ anime.thumbnail.url }}" alt="{{ anime.judul }}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">
+          {% else %}
+            <span>{{ anime.emoji|default:'🎬' }}</span>
+          {% endif %}
+
+          <!-- Badge tipe -->
+          {% if anime.tipe == 'sub' %}
+            <span class="anime-badge sub">SUB</span>
+          {% elif anime.tipe == 'dub' %}
+            <span class="anime-badge" style="background:#7c3aed">DUB</span>
+          {% elif anime.tipe == 'baru' %}
+            <span class="anime-badge new">BARU</span>
+          {% endif %}
+
+          <span class="anime-ep">Ep {{ anime.total_episode }}</span>
+          <div class="overlay"><div class="play-btn">▶</div></div>
+        </div>
+        <div class="anime-info">
+          <div class="anime-title">{{ anime.judul }}</div>
+          <div class="anime-meta">
+            <span class="star">★</span> {{ anime.rating }} • {{ anime.genre.nama }}
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <p style="color:var(--text2);grid-column:span 5">Belum ada anime terbaru.</p>
+    {% endfor %}
+  </div>
+
+  <!-- POPULER MINGGU INI -->
+  <div class="section-header">
+    <div class="section-title">Populer Minggu Ini</div>
+    <a href="#" class="see-all">Lihat Semua →</a>
+  </div>
+  <div class="anime-grid">
+    {% for anime in anime_populer %}
+      <a href="#" class="anime-card">
+        <div class="anime-thumb" style="background: {{ anime.warna_bg|default:'linear-gradient(135deg,#0a1a30,#1a4070)' }}">
+          {% if anime.thumbnail %}
+            <img src="{{ anime.thumbnail.url }}" alt="{{ anime.judul }}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">
+          {% else %}
+            <span>{{ anime.emoji|default:'🎬' }}</span>
+          {% endif %}
+
+          {% if anime.tipe == 'sub' %}
+            <span class="anime-badge sub">SUB</span>
+          {% elif anime.tipe == 'dub' %}
+            <span class="anime-badge" style="background:#7c3aed">DUB</span>
+          {% elif anime.tipe == 'baru' %}
+            <span class="anime-badge new">BARU</span>
+          {% endif %}
+
+          <span class="anime-ep">Ep {{ anime.total_episode }}</span>
+          <div class="overlay"><div class="play-btn">▶</div></div>
+        </div>
+        <div class="anime-info">
+          <div class="anime-title">{{ anime.judul }}</div>
+          <div class="anime-meta">
+            <span class="star">★</span> {{ anime.rating }} • {{ anime.genre.nama }}
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <p style="color:var(--text2);grid-column:span 5">Belum ada data.</p>
+    {% endfor %}
+  </div>
+
+</div><!-- /.main -->
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+  <!-- PENGUMUMAN -->
+  <div class="sidebar-block">
+    <div class="sidebar-title">📢 Pengumuman</div>
+    <div class="announcement">
+      {% if pengumuman %}
+        {{ pengumuman|linebreaksbr }}
+      {% else %}
+        <strong>Selamat datang di Sharotta!</strong><br>
+        Website anime subtitle Indonesia. Konten terus diperbarui setiap hari.
+        Daftar sekarang untuk menikmati fitur lebih lengkap! 🎉
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- TOP TAYANG -->
+  <div class="sidebar-block">
+    <div class="sidebar-title">🔥 Top Tayang</div>
+    <div class="top-list">
+      {% for anime in top_tayang %}
+        <div class="top-item">
+          <div class="top-num {% if forloop.counter == 1 %}t1{% elif forloop.counter == 2 %}t2{% elif forloop.counter == 3 %}t3{% endif %}">
+            #{{ forloop.counter }}
+          </div>
+          <div class="top-thumb">
+            {% if anime.thumbnail %}
+              <img src="{{ anime.thumbnail.url }}" alt="{{ anime.judul }}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">
+            {% else %}
+              {{ anime.emoji|default:'🎬' }}
+            {% endif %}
+          </div>
+          <div class="top-info">
+            <div class="top-title">{{ anime.judul }}</div>
+            <div class="top-sub">{{ anime.total_episode }} Ep • {{ anime.genre.nama }}</div>
+          </div>
+          <div class="top-score">★ {{ anime.rating }}</div>
+        </div>
+      {% empty %}
+        <p style="color:var(--text2);font-size:13px">Belum ada data.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- TAG POPULER -->
+  <div class="sidebar-block">
+    <div class="sidebar-title">🏷️ Tag Populer</div>
+    <div class="tags-wrap">
+      {% for genre in genres %}
+        <a href="?genre={{ genre.slug }}" class="tag {{ genre.warna_class|default:'pink' }}">
+          {{ genre.nama }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- KOMENTAR TERBARU -->
+  <div class="sidebar-block">
+    <div class="sidebar-title">💬 Komentar Terbaru</div>
+    {% for komentar in komentar_terbaru %}
+      <div class="comment-item">
+        <div class="avatar" style="background: {{ komentar.user.profile.warna_avatar|default:'linear-gradient(135deg,#e040a0,#7c3aed)' }}">
+          {{ komentar.user.username|slice:":2"|upper }}
+        </div>
+        <div class="c-meta">
+          <span class="c-user">{{ komentar.user.username }}</span>
+          <span class="c-time">{{ komentar.dibuat|timesince }} lalu</span>
+          <div class="c-text">{{ komentar.isi|truncatechars:50 }}</div>
+          <div class="c-anime">↳ {{ komentar.anime.judul }} Ep {{ komentar.episode }}</div>
+        </div>
+      </div>
+    {% empty %}
+      <p style="color:var(--text2);font-size:13px">Belum ada komentar.</p>
+    {% endfor %}
+  </div>
+
+</div><!-- /.sidebar -->
+
+{% endblock %}
